@@ -1,0 +1,10 @@
+This code is for Chapter 1 of Machine Learning with Spark.
+
+The files included are:
+
+1. scala-shell-code_01.scala - Scala code for the interactive Spark shell used in the chapter
+2. scala-spark-app/ - Directory containing a Scala project that can be built and run using SBT
+3. scala-java-app/ - Directory containing a Java project that can be built and run using Maven
+4. scala-python-app/ - Directory containing a Python project that can be run using the PySpark script
+
+See the relevant code files and the chapter for more information.

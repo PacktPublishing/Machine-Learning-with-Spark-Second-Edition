@@ -1,0 +1,20 @@
+// intepret user clustering
+val movieMap = titlesAndGenres.map { case (id, (title, genres)) => (id, title) }.collectAsMap //(title, genres.mkString(" "))) }.collectAsMap
+val userTopMovies = ratings.groupBy(_.user).map { case (id, ratings) => (id, ratings.map(r => (r.product, r.rating)).toSeq.sortBy(-_._2).take(3)) }
+val usersAssigned = userFactors.map { case (id, vector) =>
+	val pred = userClusterModel.predict(vector)
+	val clusterCentre = userClusterModel.clusterCenters(pred)
+	val dist = computeDistance(DenseVector(clusterCentre.toArray), DenseVector(vector.toArray))
+	(id, (pred, dist))
+}
+val usersJoinedClusters = usersAssigned.join(userTopMovies)
+val byCluster = usersJoinedClusters.map { case (id, ((cluster, dist), movies)) => 
+	(cluster, (dist, movies))
+}.groupBy { case (cluster, (dist, movies)) => cluster }.collectAsMap
+
+for ( (k, v) <- byCluster.toSeq.sortBy(_._1)) {
+	println(s"Cluster $k:")
+	val m = v.toSeq.sortBy { case (cluster, (dist, movies)) => dist }
+	println(m.take(5).map { case (cluster, (dist, movies)) => movies.map(m => movieMap(m._1)).mkString(",") }.mkString("\n"))
+	println("=====\n")
+}
